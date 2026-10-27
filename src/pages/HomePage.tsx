@@ -106,7 +106,7 @@ export default function HomePage() {
       </section>
 
       <section className="mx-auto max-w-[1200px] px-4 pt-12 sm:px-6">
-        <h2 className="text-sm font-medium text-muted">Courses with ratings</h2>
+        <h2 className="text-sm font-medium text-muted">{featured.data?.some((f) => f.rating_count > 0) ? 'Courses with ratings' : 'Courses — be the first to add a problem set'}</h2>
         <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {featured.isLoading
             ? Array.from({ length: 3 }, (_, i) => <Skeleton key={i} className="h-24 rounded-xl" />)
