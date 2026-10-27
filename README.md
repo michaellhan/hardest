@@ -3,9 +3,7 @@
 Crowdsourced difficulty ratings for individual homework problems, shown as heatmaps.
 Students rate each problem from 1 to 10. Each course semester gets a grid with assignments as rows and problems as columns, so the hardest problems stand out.
 
-Live at **https://michael-han.com/hardest/**. It is Harvard-only for now and the first example is Math 55a, Fall 2026. Until a Supabase project is connected, the live site runs in **demo mode**:
-- every rating, user and most problem text is synthetic and labeled as such;
-- changes are saved only in your browser.
+Live at **https://michael-han.com/hardest/**, backed by Supabase. It is Harvard-only for now. Add `?demo=1` to any URL for the in-browser sandbox, where every rating, user and most problem text is synthetic and changes stay in your browser.
 
 ```
 University → Course → Offering (semester) → Assignment → Problem → Part
@@ -33,7 +31,7 @@ University → Course → Offering (semester) → Assignment → Problem → Par
 - **Upload wizard** (`src/pages/upload`), steps:
   1. Choose the course, semester and assignment.
   2. Add the source: upload a PDF, TeX, Markdown, text or DOCX file; paste text; or type labels only.
-  3. A deterministic parser splits it into problems and parts.
+  3. A deterministic parser splits it into problems and parts. For PDFs made with TeX, math is rebuilt as LaTeX from the PDF's fonts and glyph positions (`src/lib/pdfMath.ts`): inline `$…$`, displayed `$$…$$`, sub/superscripts, fractions, limits on ∑/∏/lim, `\mathbb`/`\mathcal`, arrows.
   4. Review in a side-by-side editor (merge, split, indent, reorder).
   5. A duplicate check runs.
   6. Choose what to publish and confirm you have the right to share it.
@@ -105,7 +103,7 @@ npm run test:e2e
 npm run lint && npm run typecheck && npm run build
 ```
 
-- `npm test` runs the unit tests: parser, stats, color scale, search parsing, heatmap model, extraction helpers and the demo API.
+- `npm test` runs the unit tests: parser, PDF math reconstruction (glyph fixtures from real psets), stats, color scale, search parsing, heatmap model, extraction helpers and the demo API.
 - `npm run test:db` runs migrations, constraints, triggers, RPCs and RLS against a real local Postgres. It needs `initdb`/`pg_ctl` on PATH.
 - `npm run test:e2e` runs Playwright against a production build in demo mode. It is real UI, but not a real backend.
 
@@ -132,9 +130,9 @@ Build-time variables come from `.env.production.local` (git-ignored) or the shel
 
 ## Known limitations
 
-- **Not yet run against a real Supabase project.** The SQL is tested on local Postgres (18) with an auth/storage shim. Storage policies and the email and OAuth flows have not been exercised end to end.
-- The live site is in demo mode until Supabase credentials are added and it is redeployed.
+- **Sign-in, Storage and OAuth not yet exercised end to end** on the live Supabase project. The schema is loaded there and the site reads from it; the SQL is also tested on local Postgres (18) with an auth/storage shim.
 - **No OCR.** Scanned or image-only PDFs are detected; the user then pastes text or enters labels manually.
+- **PDF math is rebuilt only from TeX math fonts** (Computer Modern / Latin Modern and the AMS fonts). Word or other PDFs keep plain extracted text. Matrices, `cases` and multi-line aligned displays come out partially (big delimiters are dropped), so the review step still asks users to check statements.
 - **No AI-assisted parsing.** The parser is deterministic (numbering patterns, LaTeX `enumerate`/`\section`, Markdown headings).
 - Gaps in the moderation tools:
   - Merging doesn't auto-resolve open reports on the merged problem.

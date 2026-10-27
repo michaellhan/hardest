@@ -12,6 +12,7 @@ src/
   lib/scale.ts                OKLCH color scales (difficulty / time / count)
   lib/parser/                 deterministic assignment parser + review-editor operations
   lib/extract.ts              PDF (pdf.js, lazy), DOCX (mammoth, lazy), text extraction
+  lib/pdfMath.ts              PDF glyph runs → Markdown with LaTeX math, from TeX font names and positions
   components/heatmap/         model.ts (pure) + Heatmap.tsx (grid, tooltip, keyboard) + PNG export
   components/problem/         ProblemPanel, RatingControl, Distribution, edit/report dialogs
   pages/                      Home, University, Course (heatmap/analytics/compare), Upload, Contribute, Me, Moderation, About
@@ -73,6 +74,14 @@ Implemented in `src/lib/stats.ts`, and mirrored in SQL for per-problem stats.
 3. Build a problem → part tree, with a confidence and warnings for each node.
 4. Guess metadata: title, number, due date.
 5. Assess PDF quality: average characters per page flags a scanned or image-only document.
+
+PDF math (`lib/pdfMath.ts`): pdf.js reports each run of glyphs with its font's PostScript name, its position and its size. When a document uses TeX math fonts, the extractor rebuilds LaTeX instead of flat text.
+- The font gives a glyph's meaning: CMMI is math italic, CMSY symbols (capitals become `\mathcal`), MSBM `\mathbb`, EUFM `\mathfrak`, CMEX big operators and delimiters (mapped by character code), LINE10 arrowheads.
+- Lines are rebuilt from baselines. Smaller glyphs that sit raised or lowered become scripts of the glyph before them; touching scripts move as a group.
+- CMEX glyphs and the cmsy radical hang from their top edge, so they are moved onto the formula's axis first.
+- Digits, `=`, brackets and operator names (`log`, `Aut`) beside math glyphs join the formula.
+- Consecutive math-only lines closer together than lines of text form one display. Glyphs above and below its main line pair up into `\frac`. Script groups under or over ∑/∏/lim become their limits.
+- The parser is told (`texMath`) not to escape `$` in such pages.
 
 The review editor's operations (merge, split at cursor, indent/outdent, add, move, delete) are pure functions in `editor.ts`. They are validated by `validateDrafts` before publishing.
 

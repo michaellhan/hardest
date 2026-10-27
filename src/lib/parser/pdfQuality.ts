@@ -93,6 +93,6 @@ export function looksLikeGarbledMath(text: string): boolean {
     const singles = tokens.filter((t) => [...t].length === 1 && !/^[aAI]$/.test(t)).length
     if (singles >= 4 && singles / tokens.length >= 0.5) return true
   }
-  const symbols = text.replace(/\$[^$]*\$/g, '').match(MATH_SYMBOL_RE)
+  const symbols = text.replace(/\$\$[\s\S]*?\$\$/g, '').replace(/\$[^$]*\$/g, '').match(MATH_SYMBOL_RE)
   return (symbols?.length ?? 0) >= 3
 }

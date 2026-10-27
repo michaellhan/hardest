@@ -41,6 +41,7 @@ export const WARNINGS = {
     'Some characters could not be decoded (common with math fonts). Compare each statement against the original PDF.',
   pdfGeneral:
     'Text extracted from PDFs often loses formatting, especially mathematical notation. Review each statement against the original.',
+  pdfTexMath: 'Formulas were rebuilt from the PDF’s math fonts. They are usually right, but check each statement against the original.',
   noStructure:
     'No problem headings were detected, so the whole document was imported as a single problem. Please split it into problems manually.',
   numbering: 'Problem numbering has gaps, duplicates or reorderings; check that no problems were missed or merged.',
@@ -359,7 +360,7 @@ export function parseDocument(input: ParseInput): ParseResult {
     } else if (isPdf && pages) {
       const pdf = buildPdfLines(pages)
       firstPageHeader = pdf.firstPageHeader
-      internal = parseTextual(pdf.lines, { kind, escapeDollars: true })
+      internal = parseTextual(pdf.lines, { kind, escapeDollars: !input.texMath })
     } else {
       const escape = !looksLikeTexMath(raw)
       internal = parseTextual(
@@ -384,7 +385,7 @@ export function parseDocument(input: ParseInput): ParseResult {
   const likelyScanned = isPdf && (pageCount ?? 0) >= 1 && (baseQuality.avgCharsPerPage ?? 0) < SCANNED_CHARS_PER_PAGE
   if (likelyScanned) warnings.push(WARNINGS.scanned)
   if (baseQuality.suspiciousCharRatio > SUSPICIOUS_RATIO_LIMIT) warnings.push(WARNINGS.undecodable)
-  if (isPdf) warnings.push(WARNINGS.pdfGeneral)
+  if (isPdf) warnings.push(input.texMath ? WARNINGS.pdfTexMath : WARNINGS.pdfGeneral)
   warnings.push(...internal.warnings)
   const all = everyProblem(problems)
   if (all.length > MAX_PROBLEMS) warnings.push(`Detected ${all.length} problems, more than the maximum of ${MAX_PROBLEMS}.`)

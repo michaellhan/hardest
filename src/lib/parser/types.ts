@@ -12,6 +12,8 @@ export interface ParseInput {
   pages?: string[]
   /** For non-PDFs: whole document text. */
   text?: string
+  /** PDFs only: the pages already carry $…$ math rebuilt from the PDF's fonts, so `$` is not currency. */
+  texMath?: boolean
 }
 
 export interface DraftProblem {

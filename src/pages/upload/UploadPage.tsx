@@ -137,7 +137,7 @@ export default function UploadPage() {
       setFile(f)
       setExtracted(ex)
       setChecksum(sum)
-      applyParse(parseDocument(ex.kind === 'pdf' ? { kind: 'pdf', pages: ex.pages } : { kind: ex.kind, text: ex.text }))
+      applyParse(parseDocument(ex.kind === 'pdf' ? { kind: 'pdf', pages: ex.pages, texMath: ex.mathMarkup } : { kind: ex.kind, text: ex.text }))
     } catch (e) {
       setSourceError(errorMessage(e))
     } finally {

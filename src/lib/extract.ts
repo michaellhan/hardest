@@ -1,5 +1,6 @@
 import type { FileKind } from './types'
 import type { SourceKind } from './parser'
+import { hasMathFonts, runsToMarkdown, type GlyphRun } from './pdfMath'
 
 export const MAX_FILE_BYTES = 20 * 1024 * 1024
 export const MAX_PDF_PAGES = 80
@@ -13,6 +14,8 @@ export interface Extracted {
   pageCount: number | null
   /** PDF only: kept for rendering page previews during review. */
   pdf?: PdfHandle
+  /** PDF only: math was rebuilt from the fonts as $…$ LaTeX (see pdfMath.ts). */
+  mathMarkup?: boolean
 }
 
 export interface PdfHandle {
@@ -50,6 +53,7 @@ export async function extractFile(file: File, onProgress?: (msg: string) => void
 
 interface TextItem {
   str: string
+  fontName?: string
   transform: number[]
   width: number
   height: number
@@ -105,20 +109,32 @@ async function loadPdfjs() {
 async function extractPdf(file: File, onProgress?: (msg: string) => void): Promise<Extracted> {
   onProgress?.('Loading PDF reader…')
   const pdfjs = await loadPdfjs()
-  const task = pdfjs.getDocument({ data: new Uint8Array(await file.arrayBuffer()) })
+  // fontExtraProperties keeps each font's PostScript name (CMMI10, MSBM10 …), which says what a glyph means.
+  const task = pdfjs.getDocument({ data: new Uint8Array(await file.arrayBuffer()), fontExtraProperties: true })
   const doc = await task.promise
   if (doc.numPages > MAX_PDF_PAGES) {
     await task.destroy()
     throw new Error(`That PDF has ${doc.numPages} pages; the limit is ${MAX_PDF_PAGES}. Upload just the assignment.`)
   }
-  const pages: string[] = []
+  const plain: string[] = []
+  const runs: GlyphRun[][] = []
   for (let i = 1; i <= doc.numPages; i++) {
     onProgress?.(`Reading page ${i} of ${doc.numPages}…`)
     const page = await doc.getPage(i)
     const content = await page.getTextContent()
-    pages.push(itemsToText(content.items as TextItem[]))
+    const items = content.items as TextItem[]
+    plain.push(itemsToText(items))
+    try {
+      // Fonts reach commonObjs only once the page's operator list has been built.
+      await page.getOperatorList()
+      runs.push(items.filter((it) => typeof it.str === 'string').map((it) => toGlyphRun(it, fontNameOf(page, it.fontName))))
+    } catch {
+      runs.push([])
+    }
     page.cleanup()
   }
+  const mathMarkup = runs.some(hasMathFonts)
+  const pages = mathMarkup ? runs.map(runsToMarkdown) : plain
   const handle: PdfHandle = {
     numPages: doc.numPages,
     async render(n, canvas, width) {
@@ -138,7 +154,22 @@ async function extractPdf(file: File, onProgress?: (msg: string) => void): Promi
       void task.destroy()
     },
   }
-  return { kind: 'pdf', fileKind: 'pdf', pages, pageCount: doc.numPages, pdf: handle }
+  return { kind: 'pdf', fileKind: 'pdf', pages, pageCount: doc.numPages, pdf: handle, mathMarkup }
+}
+
+function fontNameOf(page: { commonObjs: { get(id: string): unknown } }, id: string | undefined): string {
+  if (!id) return ''
+  try {
+    const font = page.commonObjs.get(id) as { name?: string } | null
+    return font?.name ?? ''
+  } catch {
+    return ''
+  }
+}
+
+export function toGlyphRun(it: TextItem, font: string): GlyphRun {
+  const [, , c, d, x, y] = it.transform
+  return { str: it.str, font, x, y, width: it.width, size: Math.hypot(c, d) || it.height }
 }
 
 /**
