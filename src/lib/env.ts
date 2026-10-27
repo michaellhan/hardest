@@ -23,7 +23,6 @@ export const config = {
   backendConfigured: Boolean(supabaseUrl && supabaseAnonKey),
   siteUrl: ((env.VITE_SITE_URL as string | undefined) || (typeof window !== 'undefined' ? window.location.origin + env.BASE_URL.replace(/\/$/, '') : '')).replace(/\/$/, ''),
   googleAuth: env.VITE_ENABLE_GOOGLE_AUTH === 'true',
-  aiParser: env.VITE_ENABLE_AI_PARSER === 'true',
   basePath: env.BASE_URL.replace(/\/$/, ''),
 }
 

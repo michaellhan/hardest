@@ -83,7 +83,7 @@ export function parseProblemQuery(q: string): ProblemQuery {
     s = s.replace(assign[0], ' ')
   }
   const prob =
-    s.match(/\b(?:problem|prob|question|q|p|exercise|ex|#)\s*\.?\s*(\d+)\s*(?:\(?([a-z]|[ivx]+)\)?)?(?=\s|$)/) ??
+    s.match(/(?:\b(?:problem|prob|question|q|p|exercise|ex)|#)\s*\.?\s*(\d+)\s*(?:\(?([a-z]|[ivx]+)\)?)?(?=\s|$)/) ??
     (assign ? s.match(/(?:^|\s)(\d+)\s*(?:\(([a-z]|[ivx]+)\)|([a-z]))?(?=\s|$)/) : null)
   if (prob) {
     out.problemLabel = prob[1] + (prob[2] ?? prob[3] ?? '')

@@ -60,7 +60,7 @@ export default function CoursePage() {
   const fallback = useResolvePath(unresolved ? uni : undefined, course, offeringSlug, assignmentSlug, problemSlug)
 
   useEffect(() => {
-    if (!unresolved || !fallback.data || !overview || !base) return
+    if (!unresolved || !fallback.data || fallback.isPlaceholderData || !overview || !base) return
     const a = overview.assignments.find((x) => x.id === fallback.data!.assignment?.id)
     const p = a?.problems.find((x) => x.id === fallback.data!.problem?.id)
     if (a && (!problemSlug || p)) navigate(`${base}/${a.slug}${p ? `/${p.slug}` : ''}${qs}`, { replace: true })
@@ -68,16 +68,17 @@ export default function CoursePage() {
       toast({ tone: 'info', message: 'That assignment or problem doesn’t exist (anymore) in this semester.' })
       navigate(`${base}${qs}`, { replace: true })
     }
-  }, [unresolved, fallback.data, overview, base, problemSlug, navigate, qs, toast])
+  }, [unresolved, fallback.data, fallback.isPlaceholderData, overview, base, problemSlug, navigate, qs, toast])
 
-  // Canonicalize capitalization / aliases in the URL.
+  // Canonicalize capitalization / aliases in the URL (never from the previous semester's placeholder data).
+  const placeholder = path.isPlaceholderData
   useEffect(() => {
-    if (!r?.course || !offering) return
+    if (!r?.course || !offering || placeholder) return
     if (r.university.slug !== uni || r.course.slug !== course || offering.slug !== offeringSlug) {
       const rest = location.pathname.split('/').slice(4).join('/')
       navigate(`${base}${rest ? `/${rest}` : ''}${qs}`, { replace: true })
     }
-  }, [r, offering, uni, course, offeringSlug, base, location.pathname, navigate, qs])
+  }, [r, offering, placeholder, uni, course, offeringSlug, base, location.pathname, navigate, qs])
 
   useTitle(r?.course ? `${r.course.code}${offering ? ` · ${offeringLabel(offering)}` : ''}` : null)
 

@@ -30,7 +30,7 @@ export function Analytics({ overview, onOpenProblem }: { overview: OfferingOverv
   const { theme } = useTheme()
   const s = useMemo(() => summarizeCourse(overview), [overview])
   const ordered = useMemo(
-    () => [...s.assignments].sort((a, b) => (a.assignment.due_date ?? '').localeCompare(b.assignment.due_date ?? '') || a.assignment.display_order - b.assignment.display_order),
+    () => [...s.assignments].sort((a, b) => (a.assignment.due_date ?? '9999').localeCompare(b.assignment.due_date ?? '9999') || a.assignment.display_order - b.assignment.display_order),
     [s.assignments],
   )
   const maxRatings = Math.max(1, ...ordered.map((a) => a.ratingCount))

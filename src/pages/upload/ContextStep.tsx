@@ -25,8 +25,9 @@ export interface OfferingContext {
 /** University → course → semester picker. Preselects from an offering id when one is given. */
 export function ContextPicker({ initialOfferingId, value, onChange }: { initialOfferingId: string | null; value: OfferingContext | null; onChange: (c: OfferingContext | null) => void }) {
   const unis = useQuery({ queryKey: ['universities'], queryFn: () => getApi().listUniversities(), staleTime: 5 * 60_000 })
-  const courseQs = useQueries({
+  const courseData = useQueries({
     queries: (unis.data ?? []).map((u) => ({ queryKey: ['courses', u.id], queryFn: () => getApi().listCourses(u.id), staleTime: 60_000 })),
+    combine: (results) => results.map((r) => r.data),
   })
   const [uniId, setUniId] = useState<string | null>(value?.universityId ?? null)
   const [courseId, setCourseId] = useState<string | null>(value?.courseId ?? null)
@@ -34,10 +35,9 @@ export function ContextPicker({ initialOfferingId, value, onChange }: { initialO
 
   const coursesByUni = useMemo(() => {
     const m = new Map<string, CourseWithOfferings[]>()
-    unis.data?.forEach((u, i) => m.set(u.id, courseQs[i]?.data ?? []))
+    unis.data?.forEach((u, i) => m.set(u.id, courseData[i] ?? []))
     return m
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [unis.data, ...courseQs.map((q) => q.data)])
+  }, [unis.data, courseData])
 
   const build = (u: University, c: CourseWithOfferings, offeringId: string): OfferingContext | null => {
     const o = c.offerings.find((x) => x.id === offeringId)

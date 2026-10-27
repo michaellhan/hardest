@@ -14,7 +14,7 @@ import { useHistory, useProblem } from '@/hooks/queries'
 import { useAuth } from '@/hooks/useAuth'
 import { useTheme } from '@/hooks/useTheme'
 import { getApi } from '@/lib/api'
-import { COMPLETION_LABELS, formatCount, formatMinutes, formatScore, relativeTime } from '@/lib/format'
+import { COMPLETION_LABELS, shortAssignmentTitle, formatCount, formatMinutes, formatScore, relativeTime } from '@/lib/format'
 import { difficultyBand, difficultyColor } from '@/lib/scale'
 import { buildUnits, displayLabel, LOW_SAMPLE, standardError } from '@/lib/stats'
 import { errorMessage } from '@/lib/errors'
@@ -145,7 +145,7 @@ export function ProblemPanel({ problemId, assignment, overview, offeringId, myRa
                       {p.stats ? `${formatScore(p.stats.mean)} · ${formatCount(p.stats.rating_count, 'rating')}` : 'unrated'}
                     </span>
                   </div>
-                  <RatingControl compact problemId={p.id} offeringId={offeringId} label={displayLabel(p, label)} current={myRatings?.[p.id]} />
+                  <RatingControl compact problemId={p.id} offeringId={offeringId} label={`${shortAssignmentTitle(assignment)} problem ${displayLabel(p, label)}`} current={myRatings?.[p.id]} />
                 </li>
               ))}
             </ul>
@@ -156,7 +156,7 @@ export function ProblemPanel({ problemId, assignment, overview, offeringId, myRa
               <StatsBlock stats={stats} theme={theme} mine={mine && !mine.stale ? mine.difficulty : null} />
             </section>
             <section className="mt-6 rounded-xl border border-border bg-surface-2/40 p-3.5" aria-label="Your rating">
-              <RatingControl problemId={problemId} offeringId={offeringId} label={label} current={mine} autoFocus={false} />
+              <RatingControl problemId={problemId} offeringId={offeringId} label={`${shortAssignmentTitle(assignment)} problem ${label}`} current={mine} autoFocus={false} />
             </section>
           </>
         )}

@@ -185,7 +185,12 @@ begin
     end if;
     perform private.check_rate('rating', 200, interval '10 minutes');
   end if;
-  new.epoch := prob.rating_epoch;
+  if tg_op = 'UPDATE' and new.problem_id <> old.problem_id
+     and old.epoch <> (select rating_epoch from public.problems where id = old.problem_id) then
+    new.epoch := 0; -- a rating that was stale on the merged source stays stale (never aggregated) on the target
+  else
+    new.epoch := prob.rating_epoch;
+  end if;
   new.updated_at := now();
   return new;
 end $$;
@@ -934,7 +939,9 @@ begin
    where rs.problem_id = s.id;
   update public.ratings rt set difficulty = rs.difficulty, time_minutes = rs.time_minutes, completion_status = rs.completion_status
     from public.ratings rs
-   where rs.problem_id = s.id and rt.problem_id = t.id and rt.user_id = rs.user_id and rs.updated_at > rt.updated_at;
+   where rs.problem_id = s.id and rt.problem_id = t.id and rt.user_id = rs.user_id
+     -- a rating of the current question version beats a stale one; otherwise the newer rating wins
+     and rs.epoch = s.rating_epoch and (rt.epoch <> t.rating_epoch or rs.updated_at > rt.updated_at);
   delete from public.ratings rs using public.ratings rt
    where rs.problem_id = s.id and rt.problem_id = t.id and rt.user_id = rs.user_id;
   update public.ratings set problem_id = t.id where problem_id = s.id;

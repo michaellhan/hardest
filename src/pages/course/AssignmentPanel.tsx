@@ -11,7 +11,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { useTheme } from '@/hooks/useTheme'
 import { getApi } from '@/lib/api'
 import { errorMessage } from '@/lib/errors'
-import { ASSIGNMENT_TYPE_LABELS, formatCount, formatDate, formatMinutes, formatScore } from '@/lib/format'
+import { ASSIGNMENT_TYPE_LABELS, shortAssignmentTitle, formatCount, formatDate, formatMinutes, formatScore } from '@/lib/format'
 import { difficultyColor } from '@/lib/scale'
 import { displayLabel, rateableProblems, summarizeAssignment } from '@/lib/stats'
 import type { MyRating, OverviewAssignment, OverviewProblem } from '@/lib/types'
@@ -124,7 +124,7 @@ export function AssignmentPanel({ assignment, offeringId, myRatings, uploadHref,
                         {s ? formatScore(s.mean) : '—'}
                       </span>
                     </div>
-                    <RatingControl compact className="px-3 pb-2.5" problemId={p.id} offeringId={offeringId} label={label} current={myRatings?.[p.id]} />
+                    <RatingControl compact className="px-3 pb-2.5" problemId={p.id} offeringId={offeringId} label={`${shortAssignmentTitle(assignment)} problem ${label}`} current={myRatings?.[p.id]} />
                   </li>
                 )
               })

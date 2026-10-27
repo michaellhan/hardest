@@ -65,7 +65,7 @@ export function itemsToText(items: TextItem[]): string {
     const y = it.transform[5]
     const h = Math.abs(it.height || it.transform[3] || 10)
     // Superscripts/subscripts sit within ~half a line of their baseline.
-    let row = rows.find((r) => Math.abs(r.y - y) < Math.max(2, Math.min(r.h, h) * 0.45))
+    let row = rows.find((r) => Math.abs(r.y - y) < Math.max(2, Math.max(r.h, h) * 0.45))
     if (!row) {
       row = { y, h, parts: [] }
       rows.push(row)
@@ -158,14 +158,14 @@ export function parseLabelList(input: string): Array<{ label: string; children: 
       if (b >= a && b - a < 60) for (let i = a; i <= b; i++) out.push({ label: String(i), children: [] })
       continue
     }
-    const sub = tok.match(/^(\d+)\s*\(?([a-z]|[ivx]+)\)?$/i)
+    const bare = tok.replace(/^(problem|prob\.?|p|q|question|#)\s*/i, '').trim()
+    const sub = bare.match(/^(\d+)\s*\(?([a-z]|[ivx]+)\)?$/i)
     if (sub) {
       const parent = out.find((p) => p.label === sub[1]) ?? (out.push({ label: sub[1], children: [] }), out[out.length - 1])
       if (!parent.children.includes(sub[2].toLowerCase())) parent.children.push(sub[2].toLowerCase())
       continue
     }
-    const label = tok.replace(/^(problem|prob\.?|p|q|question|#)\s*/i, '').trim()
-    if (label && !out.some((p) => p.label === label)) out.push({ label, children: [] })
+    if (bare && !out.some((p) => p.label === bare)) out.push({ label: bare, children: [] })
   }
   return out
 }

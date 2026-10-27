@@ -77,12 +77,12 @@ export function Heatmap({ overview, myRatings, options, theme, selectedProblemId
           {!options.expand && !model.wide && model.columns > 0 ? (
             <div role="row" className="flex items-end gap-[3px] text-[10px] font-medium text-faint tabular" aria-hidden>
               <div className="sticky left-0 z-10 w-[88px] shrink-0 bg-bg sm:w-[168px]" />
+              {showAverage ? <div className="mr-2 w-12 shrink-0 pb-0.5 text-center">avg</div> : null}
               {Array.from({ length: model.columns }, (_, i) => (
                 <div key={i} className={cn(cellW, 'shrink-0 pb-0.5 text-center')}>
                   {i + 1}
                 </div>
               ))}
-              {showAverage ? <div className="ml-2 w-12 shrink-0 pb-0.5 text-center">avg</div> : null}
             </div>
           ) : null}
           {model.rows.map((row, r) => (
@@ -169,6 +169,16 @@ const Row = memo(function Row({
           </span>
         </button>
       </div>
+      {showAverage ? (
+        <div
+          className={cn('mr-2 flex h-9 w-12 shrink-0 items-center justify-center rounded-[5px] text-[12px] font-semibold tabular sm:h-[38px]', !avg && 'border border-dashed border-border text-faint')}
+          style={avg ? { backgroundColor: avg.bg, color: avg.fg } : undefined}
+          title={s.mean != null ? `Assignment average ${s.mean.toFixed(2)} — mean of ${s.ratedUnits} rated problem${s.ratedUnits === 1 ? '' : 's'} (of ${s.totalUnits}); unrated problems excluded` : 'No ratings yet'}
+          aria-label={s.mean != null ? `${row.assignment.title} average difficulty ${s.mean.toFixed(1)}` : `${row.assignment.title} has no ratings yet`}
+        >
+          {s.mean != null ? s.mean.toFixed(1) : '—'}
+        </div>
+      ) : null}
       {row.cells.length === 0 ? <span className="px-1 text-xs text-faint">No problems listed yet</span> : null}
       {row.cells.map((cell, c) => {
         const look = cellAppearance(cell, options.metric, theme, maxCount)
@@ -223,16 +233,6 @@ const Row = memo(function Row({
           </button>
         )
       })}
-      {showAverage ? (
-        <div
-          className={cn('ml-2 flex h-9 w-12 shrink-0 items-center justify-center rounded-[5px] text-[12px] font-semibold tabular sm:h-[38px]', !avg && 'border border-dashed border-border text-faint')}
-          style={avg ? { backgroundColor: avg.bg, color: avg.fg } : undefined}
-          title={s.mean != null ? `Assignment average ${s.mean.toFixed(2)} — mean of ${s.ratedUnits} rated problem${s.ratedUnits === 1 ? '' : 's'} (of ${s.totalUnits}); unrated problems excluded` : 'No ratings yet'}
-          aria-label={s.mean != null ? `${row.assignment.title} average difficulty ${s.mean.toFixed(1)}` : `${row.assignment.title} has no ratings yet`}
-        >
-          {s.mean != null ? s.mean.toFixed(1) : '—'}
-        </div>
-      ) : null}
     </div>
   )
 })

@@ -41,7 +41,7 @@ export function Compare({ offerings, current }: { offerings: Offering[]; current
     const sa = summarizeCourse(a.data)
     const sb = summarizeCourse(b.data)
     const order = (s: typeof sa) =>
-      [...s.assignments].sort((x, y) => (x.assignment.due_date ?? '').localeCompare(y.assignment.due_date ?? '') || x.assignment.display_order - y.assignment.display_order)
+      [...s.assignments].sort((x, y) => (x.assignment.due_date ?? '9999').localeCompare(y.assignment.due_date ?? '9999') || x.assignment.display_order - y.assignment.display_order)
     const la = order(sa)
     const lb = order(sb)
     const mb = new Map(lb.map((x, i) => [key(x, i), x]))

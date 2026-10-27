@@ -77,6 +77,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [api])
 
+  // Signing in (by code, magic link in another tab, or demo) finishes whatever asked for it.
+  useEffect(() => {
+    if (user) setSignInOpen(false)
+  }, [user])
+
   // Any change of identity invalidates per-user data.
   useEffect(() => {
     qc.invalidateQueries({ queryKey: ['me'] })

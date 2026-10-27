@@ -8,6 +8,7 @@ import { Badge, EmptyState, Segmented, Skeleton, Toggle } from '@/components/ui/
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { useToast } from '@/components/ui/toast'
 import { useAuth } from '@/hooks/useAuth'
+import { useTitle } from '@/hooks/useMisc'
 import { useSavedCourses, useToggleSaved } from '@/hooks/queries'
 import { getApi } from '@/lib/api'
 import { errorMessage } from '@/lib/errors'
@@ -17,6 +18,7 @@ import type { AppRole, Profile } from '@/lib/types'
 export default function MePage() {
   const { user, ready, profile, openSignIn } = useAuth()
   const isDemo = Boolean(getApi().demo)
+  useTitle('My courses')
 
   if (!ready) {
     return (

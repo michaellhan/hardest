@@ -15,8 +15,8 @@ const DIFFICULTY: Record<Theme, Stop[]> = {
     [5, 0.85, 0.12, 92],
     [6, 0.8, 0.135, 74],
     [7, 0.735, 0.145, 56],
-    [8.5, 0.655, 0.15, 40],
-    [10, 0.56, 0.15, 26],
+    [8.5, 0.69, 0.145, 40],
+    [10, 0.635, 0.135, 26],
   ],
   dark: [
     [1, 0.36, 0.05, 152],
@@ -95,12 +95,23 @@ export interface Swatch {
   fg: string
 }
 
+function luminance(hex: string) {
+  const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255).map((v) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4))
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b
+}
+function contrast(a: string, b: string) {
+  const [x, y] = [luminance(a), luminance(b)].sort((m, n) => n - m)
+  return (x + 0.05) / (y + 0.05)
+}
+
 const cache = new Map<string, Swatch>()
 function swatch(key: string, l: number, c: number, h: number, theme: Theme): Swatch {
   let s = cache.get(key)
   if (!s) {
-    const darkText = theme === 'light' ? l > 0.6 : l > 0.62
-    s = { bg: oklchToHex(l, c, h), fg: darkText ? (theme === 'light' ? '#1f1d1a' : '#151412') : '#fbfaf8' }
+    const bg = oklchToHex(l, c, h)
+    const dark = theme === 'light' ? '#1f1d1a' : '#151412'
+    // Pick whichever text color reads better on this exact background.
+    s = { bg, fg: contrast(bg, dark) >= contrast(bg, '#fbfaf8') ? dark : '#fbfaf8' }
     cache.set(key, s)
   }
   return s

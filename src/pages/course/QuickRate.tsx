@@ -8,6 +8,7 @@ import { LazyMarkdown } from '@/components/LazyMarkdown'
 import { RatingControl } from '@/components/problem/RatingControl'
 import { useProblem } from '@/hooks/queries'
 import { buildUnits, displayLabel } from '@/lib/stats'
+import { shortAssignmentTitle } from '@/lib/format'
 import type { MyRating, OverviewAssignment } from '@/lib/types'
 
 /**
@@ -141,7 +142,7 @@ export function QuickRate({ assignment, offeringId, myRatings, open, onOpenChang
               className="mt-4"
               problemId={item.problem.id}
               offeringId={offeringId}
-              label={item.label}
+              label={`${shortAssignmentTitle(assignment)} problem ${item.label}`}
               current={myRatings?.[item.problem.id]}
               showExtras={false}
               autoFocus

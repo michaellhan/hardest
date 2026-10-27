@@ -238,7 +238,8 @@ export default function UploadPage() {
       qc.invalidateQueries({ queryKey: ['featured'] })
       toast({
         tone: 'success',
-        message: `Published ${res.created} new problem${res.created === 1 ? '' : 's'}${res.skipped.length ? ` (already there: ${res.skipped.join(', ')})` : ''}.`,
+        // res.created counts parts too.
+        message: `Published ${res.created} new ${counts.parts ? 'problems and parts' : res.created === 1 ? 'problem' : 'problems'}${res.skipped.length ? ` (already there: ${res.skipped.join(', ')})` : ''}.`,
       })
       navigate(`/${ctx.universitySlug}/${ctx.courseSlug}/${ctx.offeringSlug}/${res.assignment_slug}`)
     } catch (e) {
