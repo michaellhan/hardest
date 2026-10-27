@@ -8,7 +8,8 @@ function gradient(stops: string[]) {
 
 export function Legend({ metric, theme, maxCount }: { metric: Metric; theme: Theme; maxCount: number }) {
   let bar: string
-  let ticks: Array<[string, number]>
+  // Third element: hide the tick on narrow screens, where the bar is too short for it.
+  let ticks: Array<[string, number, boolean?]>
   let caption: string
   if (metric === 'time') {
     const mins = [10, 20, 45, 90, 180, 480]
@@ -21,7 +22,7 @@ export function Legend({ metric, theme, maxCount }: { metric: Metric; theme: The
     caption = 'Number of ratings'
   } else {
     bar = gradient(Array.from({ length: 19 }, (_, i) => difficultyColor(1 + i * 0.5, theme).bg))
-    ticks = [['1 trivial', 0], ['3', 2 / 9], ['5 moderate', 4 / 9], ['7', 6 / 9], ['10 extreme', 1]]
+    ticks = [['1 trivial', 0], ['3', 2 / 9, true], ['5 moderate', 4 / 9], ['7', 6 / 9, true], ['10 extreme', 1]]
     caption = metric === 'mean' ? 'Average difficulty' : 'Median difficulty'
   }
   return (
@@ -31,8 +32,13 @@ export function Legend({ metric, theme, maxCount }: { metric: Metric; theme: The
         <div className="w-44 sm:w-56">
           <div className="h-2 rounded-full" style={{ background: bar }} />
           <div className="relative mt-1 h-3 tabular">
-            {ticks.map(([t, p]) => (
-              <span key={t} className="absolute -translate-x-1/2 whitespace-nowrap text-[10px] text-faint first:translate-x-0 last:-translate-x-full" style={{ left: `${p * 100}%` }}>
+            {ticks.map(([t, p, wide], i) => (
+              // End labels sit inside the bar's ends; the rest are centred on their position.
+              <span
+                key={t}
+                className={`absolute whitespace-nowrap text-[10px] text-faint ${wide ? 'hidden sm:block' : ''}`}
+                style={i === 0 ? { left: 0 } : i === ticks.length - 1 ? { right: 0 } : { left: `${p * 100}%`, transform: 'translateX(-50%)' }}
+              >
                 {t}
               </span>
             ))}
