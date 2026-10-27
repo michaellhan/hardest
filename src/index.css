@@ -1,0 +1,222 @@
+@import 'tailwindcss';
+@import 'katex/dist/katex.min.css';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --bg: #fafaf8;
+  --surface: #ffffff;
+  --surface-2: #f3f2ef;
+  --surface-3: #ebe9e5;
+  --border: #e6e4df;
+  --border-strong: #d4d1cb;
+  --text: #1b1a18;
+  --muted: #67645e;
+  --faint: #9c9890;
+  --accent: #1b1a18;
+  --accent-fg: #fafaf8;
+  --focus: #3b6fe0;
+  --ok: #2f7d4f;
+  --warn: #a35c00;
+  --danger: #b4372b;
+  --demo: #8a5a00;
+  --demo-bg: #fdf3dc;
+  --empty-cell: #f1f0ec;
+  --hatch: rgba(27, 26, 24, 0.13);
+  color-scheme: light;
+}
+
+.dark {
+  --bg: #0e0e0d;
+  --surface: #151514;
+  --surface-2: #1c1c1a;
+  --surface-3: #252522;
+  --border: #282725;
+  --border-strong: #393835;
+  --text: #ecebe8;
+  --muted: #9e9a93;
+  --faint: #6d6a64;
+  --accent: #ecebe8;
+  --accent-fg: #0e0e0d;
+  --focus: #6d95f2;
+  --ok: #5fb37f;
+  --warn: #e0a23c;
+  --danger: #e2685b;
+  --demo: #e9b44c;
+  --demo-bg: #2a2111;
+  --empty-cell: #1a1a18;
+  --hatch: rgba(236, 235, 232, 0.14);
+  color-scheme: dark;
+}
+
+@theme {
+  --font-sans: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --color-focus: var(--focus);
+  --color-ok: var(--ok);
+  --color-warn: var(--warn);
+  --color-danger: var(--danger);
+  --color-demo: var(--demo);
+  --color-demo-bg: var(--demo-bg);
+  --animate-fade-in: fade-in 160ms ease-out;
+  --animate-slide-in: slide-in 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  --animate-pop: pop 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes slide-in {
+    from { opacity: 0; transform: translateX(12px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes pop {
+    0% { transform: scale(0.96); }
+    50% { transform: scale(1.04); }
+    100% { transform: none; }
+  }
+}
+
+@layer base {
+  html {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-feature-settings: 'ss01', 'cv11';
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    background: var(--bg);
+    min-height: 100dvh;
+  }
+  ::selection {
+    background: color-mix(in srgb, var(--focus) 25%, transparent);
+  }
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  button:not(:disabled),
+  [role='button']:not([aria-disabled='true']) {
+    cursor: pointer;
+  }
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--faint);
+  }
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Low-sample heatmap cells get a subtle diagonal hatch, so uncertainty is visible without relying on color. */
+.hatch {
+  background-image: repeating-linear-gradient(135deg, var(--hatch) 0 1.5px, transparent 1.5px 5px);
+}
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+
+/* Rendered problem statements */
+.prose-statement {
+  line-height: 1.65;
+  font-size: 0.9375rem;
+  overflow-wrap: anywhere;
+}
+.prose-statement > * + * {
+  margin-top: 0.7em;
+}
+.prose-statement ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+}
+.prose-statement ol {
+  list-style: decimal;
+  padding-left: 1.4rem;
+}
+.prose-statement li + li {
+  margin-top: 0.25em;
+}
+.prose-statement code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.05em 0.3em;
+}
+.prose-statement pre {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.75rem 0.9rem;
+  overflow-x: auto;
+  font-size: 0.85em;
+}
+.prose-statement pre code {
+  background: none;
+  border: 0;
+  padding: 0;
+}
+.prose-statement a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: var(--border-strong);
+}
+.prose-statement blockquote {
+  border-left: 2px solid var(--border-strong);
+  padding-left: 0.8rem;
+  color: var(--muted);
+}
+.prose-statement img {
+  max-width: 100%;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+.prose-statement table {
+  border-collapse: collapse;
+  font-size: 0.9em;
+}
+.prose-statement th,
+.prose-statement td {
+  border: 1px solid var(--border);
+  padding: 0.25rem 0.5rem;
+}
+.prose-statement .katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.15rem 0;
+  margin: 0.6em 0;
+}
+.prose-statement .katex {
+  font-size: 1.06em;
+}
+.katex-error {
+  color: var(--danger) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

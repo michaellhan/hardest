@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>hardest — how hard was that problem?</title>
+    <meta name="description" content="Crowdsourced difficulty ratings for individual homework problems. See which problems in Math 55a, Stat 110, CS 1210 and other Harvard courses are the hardest." />
+    <meta name="theme-color" content="#fafaf8" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0e0e0d" media="(prefers-color-scheme: dark)" />
+    <meta property="og:title" content="hardest — how hard was that problem?" />
+    <meta property="og:description" content="Students rate individual homework problems from 1 to 10." />
+    <link rel="icon" type="image/svg+xml" href="/hardest/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <script>
+      // Restore a deep link that GitHub Pages' 404.html redirected to /hardest/?p=...
+      ;(function () {
+        var q = new URLSearchParams(location.search)
+        var p = q.get('p')
+        if (p) {
+          q.delete('p')
+          var rest = q.toString()
+          history.replaceState(null, '', '/hardest/' + p.replace(/^\/+/, '') + (rest ? '?' + rest : '') + location.hash)
+        }
+        // Apply the theme before first paint to avoid a flash.
+        try {
+          var t = localStorage.getItem('hardest:theme')
+          if (t === 'dark' || (!t && matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.classList.add('dark')
+        } catch (e) {}
+      })()
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>hardest needs JavaScript to run.</noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
