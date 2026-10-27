@@ -64,8 +64,8 @@ Open http://localhost:5173/hardest/. With no `.env.local`, the app runs fully in
 
 1. Create a Supabase project. Then apply the migrations (`supabase db push` with the CLI linked, or run `supabase/migrations/*.sql` in order in the SQL editor) and load the real catalog with `supabase/seed.sql`.
 2. Optionally load the synthetic data with `supabase/seed-demo.sql`. Remove it later with `supabase/remove-demo.sql`. Real data is untouched either way.
-3. In **Auth → URL configuration**, set the Site URL to `https://michael-han.com/hardest` and add the redirect URLs `https://michael-han.com/hardest/**` and `http://localhost:5173/hardest/**`.
-4. In **Auth → Email templates → Magic link**, include `{{ .Token }}` so the email carries the 6-digit code as well as the link.
+3. In **Auth → URL configuration**, set the Site URL to `https://www.michael-han.com/hardest` and add the redirect URLs `https://www.michael-han.com/hardest/**`, `https://michael-han.com/hardest/**` and `http://localhost:5173/hardest/**`. The bare domain redirects to `www`, so links should point at `www`.
+4. In **Auth → Email templates**, include `{{ .Token }}` in both **Magic link** and **Confirm signup** (new users get the latter) so the email carries the 6-digit code as well as the link.
 5. Set up custom SMTP: the built-in sender only allows a few emails per hour.
 6. Optional: enable Google under Auth → Providers and set `VITE_ENABLE_GOOGLE_AUTH=true`.
 7. Copy `.env.example` to `.env.local` and fill in `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` from Settings → API. The anon key is public by design, and row-level security (RLS) protects the data.
