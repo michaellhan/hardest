@@ -14,7 +14,7 @@ import { getApi, ApiError } from '@/lib/api'
 import { errorMessage } from '@/lib/errors'
 import { ASSIGNMENT_TYPE_LABELS } from '@/lib/format'
 import { extractFile, parseLabelList, type Extracted } from '@/lib/extract'
-import { flattenDrafts, parseDocument, sha256Hex, validateDrafts, type DraftProblem, type ParseResult } from '@/lib/parser'
+import { flattenDrafts, nameProblems, parseDocument, sha256Hex, validateDrafts, type DraftProblem, type ParseResult } from '@/lib/parser'
 import type { AssignmentType, DuplicateCandidate, PublishProblemNode, StatementSource } from '@/lib/types'
 import { ContextPicker, type OfferingContext } from './ContextStep'
 import { PdfPreview, ReviewEditor } from './ReviewEditor'
@@ -114,7 +114,7 @@ export default function UploadPage() {
   // ── source handling
   const applyParse = (res: ParseResult) => {
     setParse(res)
-    setDrafts(res.problems)
+    setDrafts(nameProblems(res.problems))
     setPublishStatements(res.quality.status !== 'likely_scanned')
     setMeta((m) => ({
       ...m,

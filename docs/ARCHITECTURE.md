@@ -74,6 +74,7 @@ Implemented in `src/lib/stats.ts`, and mirrored in SQL for per-problem stats.
 3. Build a problem → part tree, with a confidence and warnings for each node.
 4. Guess metadata: title, number, due date.
 5. Assess PDF quality: average characters per page flags a scanned or image-only document.
+6. Name untitled problems (`naming.ts`, applied by the upload page): a bold lead-in, a named result ("Cauchy–Schwarz inequality"), the claim of "Prove that …", the object of "Let X be …", or else the first part's statement, cut to a few words. Uploaders can edit or clear the name before publishing.
 
 PDF math (`lib/pdfMath.ts`): pdf.js reports each run of glyphs with its font's PostScript name, its position and its size. When a document uses TeX math fonts, the extractor rebuilds LaTeX instead of flat text.
 - The font gives a glyph's meaning: CMMI is math italic, CMSY symbols (capitals become `\mathcal`), MSBM `\mathbb`, EUFM `\mathfrak`, CMEX big operators and delimiters (mapped by character code), LINE10 arrowheads.

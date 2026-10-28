@@ -12,6 +12,7 @@ export { parseDocument } from './parse'
 export { latexToMarkdown } from './latex'
 export { normalizeForCompare, sha256Hex, textSimilarity } from './similarity'
 export { nextLabel } from './labels'
+export { nameProblems, suggestTitle } from './naming'
 export {
   addProblem,
   flattenDrafts,

@@ -48,8 +48,8 @@ test('paste → review → publish → appears on the heatmap', async ({ page })
 
   await expect(page).toHaveURL(/\/harvard\/math-55a\/fall-2026\/pset-12$/)
   const grid = page.getByRole('grid')
-  await expect(grid.getByRole('gridcell', { name: /^Problem Set 12, problem 1: not rated yet/ })).toBeVisible()
-  await expect(grid.getByRole('gridcell', { name: /^Problem Set 12, problem 3: not rated yet/ })).toBeVisible()
+  await expect(grid.getByRole('gridcell', { name: /^Problem Set 12, problem 1 \(.+\): not rated yet/ })).toBeVisible()
+  await expect(grid.getByRole('gridcell', { name: /^Problem Set 12, problem 3 \(.+\): not rated yet/ })).toBeVisible()
 })
 
 test('publishing the same assignment twice is caught as a duplicate', async ({ page }) => {
