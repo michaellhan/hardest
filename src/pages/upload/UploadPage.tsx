@@ -11,6 +11,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { useOverview } from '@/hooks/queries'
 import { useTitle } from '@/hooks/useMisc'
 import { getApi, ApiError } from '@/lib/api'
+import { config, setDemoMode } from '@/lib/env'
 import { errorMessage } from '@/lib/errors'
 import { ASSIGNMENT_TYPE_LABELS } from '@/lib/format'
 import { extractFile, parseLabelList, type Extracted } from '@/lib/extract'
@@ -258,6 +259,28 @@ export default function UploadPage() {
     <div className={cn('mx-auto px-4 py-8 sm:px-6', step === 'review' ? 'max-w-[1440px]' : 'max-w-3xl')}>
       <h1 className="text-2xl font-semibold tracking-tight">Add an assignment</h1>
       <p className="mt-1 text-sm text-muted">Files are read in your browser. Nothing is published until you review it and press Publish.</p>
+      {config.demo ? (
+        <div className="mt-4 flex gap-3 rounded-xl border border-demo/40 bg-demo-bg p-4 text-sm" role="alert">
+          <AlertTriangle className="mt-0.5 size-4 shrink-0 text-demo" aria-hidden />
+          <span>
+            <span className="font-semibold">This is the demo sandbox, so nothing you publish here is shared.</span> It is saved only in this browser, and no one
+            else will see it.{' '}
+            {config.backendConfigured ? (
+              <button className="underline underline-offset-2" onClick={() => setDemoMode(false)}>
+                Switch to the real site
+              </button>
+            ) : (
+              <>
+                Publish on{' '}
+                <a className="underline underline-offset-2" href="https://www.michael-han.com/hardest/upload">
+                  michael-han.com/hardest
+                </a>{' '}
+                instead.
+              </>
+            )}
+          </span>
+        </div>
+      ) : null}
 
       <ol className="mt-6 flex gap-1 text-xs" aria-label="Steps">
         {STEPS.map((s, i) => (
